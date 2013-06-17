@@ -46,12 +46,34 @@ class MqsITest extends GroovyTestCase {
     String correlationId = 'foo.bar'
     String msg = getClass().getResource('Sample.xml').getText('UTF-8')
     mqs.withQueueManager(config.queueManager) {
+      // Send with correlation id
       withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
         sendToQueue(msg, correlationId)
       }
+      // Expect match with correlation id
       withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
         String received = receiveMessageByCorrelationId(correlationId)
         assert received == msg
+      }
+      // Read with no messages in queue
+      withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
+        try {
+          receiveMessageByCorrelationId(correlationId)
+          fail('Excpected exception')
+        } catch (Mqs.NoMoreMessagesException ex) {
+          // ok
+        }
+      }
+      // Send
+      withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
+        sendToQueue(msg + '_1')
+        sendToQueue(msg + '_2')
+      }
+      // Expect two read
+      withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
+        assert foreachMessageReceived { content ->
+          assert content == msg + '_1' || content == msg + '_2'
+        } == 2
       }
     }
   }

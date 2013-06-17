@@ -5,6 +5,22 @@ import com.ibm.mq.constants.MQConstants
 
 class Mqs {
 
+  class UnknownMqsException extends Exception {
+    UnknownMqsException(final MQException ex) {
+      super(ex)
+    }
+  }
+
+  class NoMoreMessagesException extends Exception {
+    NoMoreMessagesException(final MQException ex) {
+      super(ex)
+    }
+
+    static def boolean matches(MQException ex) {
+      ex.getCompCode() == 2 && ex.getReason() == 2033
+    }
+  }
+
   enum QueueOptions {
     SEND(MQConstants.MQOO_OUTPUT | MQConstants.MQOO_FAIL_IF_QUIESCING),
     RECEIVE(MQConstants.MQOO_INPUT_AS_Q_DEF | MQConstants.MQOO_OUTPUT)
@@ -104,7 +120,12 @@ class Mqs {
 
     MQMessage message = new MQMessage()
     message.correlationId = corellationId
-    queue.get(message, options)
+
+    try {
+      queue.get(message, options)
+    } catch (MQException ex) {
+      mapException(ex)
+    }
 
     getContent(message)
   }
@@ -125,10 +146,8 @@ class Mqs {
         count++
       }
     } catch (MQException ex) {
-      if (ex.getCompCode() != 2 && ex.getReason() != 2033) {
-        ex.printStackTrace() // Something went wrong
-      } else {
-        println('No more messages')
+      if(!NoMoreMessagesException.matches(ex)) {
+        throw new UnknownMqsException(ex)
       }
     }
     return count
@@ -173,6 +192,12 @@ class Mqs {
     byte[] strData = new byte[strLen]
     msg.readFully(strData)
     return new String(strData)
+  }
+
+  def mapException(MQException ex) {
+    if (NoMoreMessagesException.matches(ex)) {
+      throw new NoMoreMessagesException(ex)
+    } else throw new UnknownMqsException(ex)
   }
 }
 
