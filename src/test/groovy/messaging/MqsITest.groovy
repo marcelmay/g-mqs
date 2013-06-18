@@ -77,4 +77,20 @@ class MqsITest extends GroovyTestCase {
       }
     }
   }
+
+  void testPurge() {
+    String msg = getClass().getResource('Sample.xml').getText('UTF-8')
+    mqs.withQueueManager(config.queueManager) {
+      // Send
+      withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
+        sendToQueue(msg + '_1')
+        sendToQueue(msg + '_2')
+      }
+      // Expect two read
+      withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
+        purgeQueue()
+        assert foreachMessageReceived() == 0
+      }
+    }
+  }
 }

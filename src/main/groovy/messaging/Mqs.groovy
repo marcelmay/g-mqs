@@ -153,6 +153,21 @@ class Mqs {
     return count
   }
 
+  def purgeQueue() {
+    MQGetMessageOptions options = new MQGetMessageOptions()
+    options.options = MQConstants.MQGMO_NO_WAIT + MQConstants.MQGMO_FAIL_IF_QUIESCING
+    try {
+      while (true) {
+        MQMessage message = new MQMessage();
+        queue.get(message, options);
+      }
+    } catch (MQException ex) {
+      if(!NoMoreMessagesException.matches(ex)) {
+        throw new UnknownMqsException(ex)
+      }
+    }
+  }
+
   def sendToQueue(String text) {
     sendToQueue(queue, text)
   }
