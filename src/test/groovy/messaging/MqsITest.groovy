@@ -75,6 +75,24 @@ class MqsITest extends GroovyTestCase {
           assert content == msg + '_1' || content == msg + '_2'
         } == 2
       }
+
+      // Receive without timeout
+      withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
+        sendToQueue(msg + '_3')
+      }
+      withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
+        String received = receiveMessage()
+        assert received == msg+'_3'
+      }
+
+      // Receive with timeout
+      withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
+        sendToQueue(msg + '_4')
+      }
+      withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
+        String received = receiveMessage(2000)
+        assert received == msg+'_4'
+      }
     }
   }
 

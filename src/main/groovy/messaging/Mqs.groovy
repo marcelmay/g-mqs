@@ -130,6 +130,21 @@ class Mqs {
     getContent(message)
   }
 
+  def receiveMessage(int timeout = 0) {
+    MQGetMessageOptions options = new MQGetMessageOptions()
+    options.options = MQConstants.MQGMO_WAIT
+    options.waitInterval = timeout
+
+    MQMessage message = new MQMessage()
+    try {
+      queue.get(message, options)
+    } catch (MQException ex) {
+      mapException(ex)
+    }
+
+    getContent(message)
+  }
+
   def foreachMessageReceived(Closure closure) {
     MQGetMessageOptions options = new MQGetMessageOptions()
     options.options = MQConstants.MQGMO_WAIT
