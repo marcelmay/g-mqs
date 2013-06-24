@@ -141,66 +141,62 @@ class Mqs {
     this
   }
 
-  def receiveMessageByCorrelationId(String corellationId) {
-    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().waitInterval(1000).matchCorrelationId().create()
-
-    MQMessage message = new MQMessage()
-    message.correlationId = corellationId
-
-    try {
-      queue.get(message, options)
-    } catch (MQException ex) {
-      mapException(ex)
+  def String receiveMessageByCorrelationId(String correlationId) {
+    queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(1000).matchCorrelationId().create()) { MQMessage message ->
+      message.correlationId = correlationId.bytes
     }
-
-    getContent(message)
   }
 
 
-  def receiveMessage(int timeout = 0) {
-    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().waitInterval(timeout).create()
-    MQMessage message = new MQMessage()
-    try {
-      queue.get(message, options)
-    } catch (MQException ex) {
-      mapException(ex)
-    }
-
-    getContent(message)
+  def String receiveMessage(int timeout = 0) {
+    queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(timeout).create())
   }
 
-  def foreachMessageReceived(Closure closure) {
-    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().waitInterval(1000).create()
+  def int foreachMessageReceived(Closure closure) {
     int count = 0
-
-    try {
-      while (true) {
-        MQMessage message = new MQMessage();
-        queue.get(message, options);
-        String content = getContent(message)
-        closure.delegate = this
-        closure.call(content)
-        count++
-      }
-    } catch (MQException ex) {
-      if(!NoMoreMessagesException.matches(ex)) {
-        throw new UnknownMqsException(ex)
-      }
+    queueGet(new MqGetMessageOptionsBuilder().waitInterval(1000).create(), true) { message ->
+      String content = getContent(message)
+      closure.delegate = this
+      closure.call(content)
+      count++
     }
-    return count
+    count
   }
 
   def purgeQueue() {
-    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().noWait().failIfQuiescing().create();
+    queueGet(new MqGetMessageOptionsBuilder().noWait().failIfQuiescing().create(), true) {
+      // Nothing
+    }
+  }
+
+  private def queueGet(MQGetMessageOptions options, boolean loop = false, Closure closure) {
     try {
-      while (true) {
+      while (loop) {
         MQMessage message = new MQMessage();
         queue.get(message, options);
+        closure.delegate = this
+        closure.call(message)
       }
     } catch (MQException ex) {
-      if(!NoMoreMessagesException.matches(ex)) {
+      if (!NoMoreMessagesException.matches(ex)) {
         throw new UnknownMqsException(ex)
       }
+    }
+  }
+
+  private def String queueGetContent(MQGetMessageOptions options) {
+    queueGetContent(options) {}
+  }
+
+  private def String queueGetContent(MQGetMessageOptions options, Closure closure) {
+    try {
+      MQMessage message = new MQMessage()
+      closure.delegate = this
+      closure.call(message)
+      queue.get(message, options)
+      getContent(message)
+    } catch (MQException ex) {
+      mapException(ex)
     }
   }
 
