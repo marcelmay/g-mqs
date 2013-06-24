@@ -31,6 +31,35 @@ class Mqs {
     }
   }
 
+  class MqGetMessageOptionsBuilder {
+    MQGetMessageOptions options = new MQGetMessageOptions()
+
+    def MqGetMessageOptionsBuilder waitInterval(int ms) {
+      options.options += MQConstants.MQGMO_WAIT
+      options.waitInterval = ms
+      this
+    }
+
+    def MqGetMessageOptionsBuilder noWait() {
+      options.options += MQConstants.MQGMO_NO_WAIT
+      this
+    }
+
+    def MqGetMessageOptionsBuilder matchCorrelationId() {
+      options.matchOptions = MQConstants.MQMO_MATCH_CORREL_ID
+      this
+    }
+
+    def MQGetMessageOptions create() {
+      options
+    }
+
+    def failIfQuiescing() {
+      options.options += MQConstants.MQGMO_FAIL_IF_QUIESCING
+      this
+    }
+  }
+
   String hostname
   Integer port
   String channel
@@ -113,10 +142,7 @@ class Mqs {
   }
 
   def receiveMessageByCorrelationId(String corellationId) {
-    MQGetMessageOptions options = new MQGetMessageOptions()
-    options.options = MQConstants.MQGMO_WAIT
-    options.matchOptions = MQConstants.MQMO_MATCH_CORREL_ID
-    options.waitInterval = 1000
+    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().waitInterval(1000).matchCorrelationId().create()
 
     MQMessage message = new MQMessage()
     message.correlationId = corellationId
@@ -130,11 +156,9 @@ class Mqs {
     getContent(message)
   }
 
-  def receiveMessage(int timeout = 0) {
-    MQGetMessageOptions options = new MQGetMessageOptions()
-    options.options = MQConstants.MQGMO_WAIT
-    options.waitInterval = timeout
 
+  def receiveMessage(int timeout = 0) {
+    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().waitInterval(timeout).create()
     MQMessage message = new MQMessage()
     try {
       queue.get(message, options)
@@ -146,9 +170,7 @@ class Mqs {
   }
 
   def foreachMessageReceived(Closure closure) {
-    MQGetMessageOptions options = new MQGetMessageOptions()
-    options.options = MQConstants.MQGMO_WAIT
-    options.waitInterval = 1000
+    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().waitInterval(1000).create()
     int count = 0
 
     try {
@@ -169,8 +191,7 @@ class Mqs {
   }
 
   def purgeQueue() {
-    MQGetMessageOptions options = new MQGetMessageOptions()
-    options.options = MQConstants.MQGMO_NO_WAIT + MQConstants.MQGMO_FAIL_IF_QUIESCING
+    MQGetMessageOptions options = new MqGetMessageOptionsBuilder().noWait().failIfQuiescing().create();
     try {
       while (true) {
         MQMessage message = new MQMessage();
@@ -205,16 +226,6 @@ class Mqs {
     }
     message.writeString(text)
     sentQeue.put(message, new MQPutMessageOptions())
-  }
-
-  def sleepMs(ms) {
-    if (ms > 0L) {
-      // Throttle throughput
-      sleep((ms) as long) { ex ->
-        println('Got interrupted!')
-        ex.printStackTrace()
-      }
-    }
   }
 
   def static String getContent(MQMessage msg) {
