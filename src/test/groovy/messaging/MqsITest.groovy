@@ -46,6 +46,14 @@ class MqsITest extends GroovyTestCase {
     String correlationId = 'foo.bar'
     String msg = getClass().getResource('Sample.xml').getText('UTF-8')
     mqs.withQueueManager(config.queueManager) {
+      // Make sure every queue is empty
+      withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
+        purgeQueue()
+      }
+      withQueue(config.queueReceive, Mqs.QueueOptions.RECEIVE) {
+        purgeQueue()
+      }
+
       // Send with correlation id
       withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
         sendToQueue(msg, correlationId)
@@ -90,7 +98,8 @@ class MqsITest extends GroovyTestCase {
         sendToQueue(msg + '_4')
       }
       withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
-        String received = receiveMessage(2000)
+        timeout(2000)
+        String received = receiveMessage()
         assert received == msg+'_4'
       }
     }

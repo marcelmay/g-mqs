@@ -35,8 +35,10 @@ class Mqs {
     MQGetMessageOptions options = new MQGetMessageOptions()
 
     def MqGetMessageOptionsBuilder waitInterval(int ms) {
-      options.options += MQConstants.MQGMO_WAIT
-      options.waitInterval = ms
+      if(timeout > 0) {
+        options.options += MQConstants.MQGMO_WAIT
+        options.waitInterval = ms
+      }
       this
     }
 
@@ -63,6 +65,7 @@ class Mqs {
   String hostname
   Integer port
   String channel
+  int timeout
   MQQueueManager queueManager
   MQQueue queue
 
@@ -71,6 +74,8 @@ class Mqs {
   def port(Integer pPort) { port = pPort; this }
 
   def channel(String pChannel) { channel = pChannel; this }
+
+  def timeout(int ms) { timeout = ms; this }
 
   /**
    * Configures using a config object.
@@ -142,19 +147,19 @@ class Mqs {
   }
 
   def String receiveMessageByCorrelationId(String correlationId) {
-    queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(1000).matchCorrelationId().create()) { MQMessage message ->
+    queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(timeout).matchCorrelationId().create()) { MQMessage message ->
       message.correlationId = correlationId.bytes
     }
   }
 
 
-  def String receiveMessage(int timeout = 0) {
+  def String receiveMessage() {
     queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(timeout).create())
   }
 
   def int foreachMessageReceived(Closure closure) {
     int count = 0
-    queueGet(new MqGetMessageOptionsBuilder().waitInterval(1000).create(), true) { message ->
+    queueGet(new MqGetMessageOptionsBuilder().waitInterval(timeout).create(), true) { message ->
       String content = getContent(message)
       closure.delegate = this
       closure.call(content)
