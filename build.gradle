@@ -4,15 +4,25 @@ apply plugin: 'maven'
 version = '1.0-SNAPSHOT'
 group = 'com.bmwgroup.fs.mqs'
 
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 repositories {
     mavenCentral()
     mavenLocal()
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.1.5'
+    compile 'org.codehaus.groovy:groovy:2.1.7'
+    testCompile 'org.codehaus.groovy:groovy-test:2.1.7'
+
     compile 'org.glassfish:javax.resource:3.1'
-    testCompile 'junit:junit:4.11'
     // MQS
     compile 'com.ibm.mq:dhbcore:7.0.1.7'
     compile 'com.ibm.mq:mq:7.0.1.7'
@@ -37,4 +47,10 @@ dependencies {
     compile 'com.ibm.mq:msg_client_wmq_common:7.0.1.7'
     compile 'com.ibm.mq:msg_client_wmq_factories:7.0.1.7'
     compile 'com.ibm.mq:msg_client_wmq_v6:7.0.1.7'
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
