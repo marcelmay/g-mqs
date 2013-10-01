@@ -56,7 +56,7 @@ class Mqs {
       options
     }
 
-    def failIfQuiescing() {
+    def MqGetMessageOptionsBuilder failIfQuiescing() {
       options.options += MQConstants.MQGMO_FAIL_IF_QUIESCING
       this
     }
@@ -69,13 +69,13 @@ class Mqs {
   MQQueueManager queueManager
   MQQueue queue
 
-  def hostname(String pHostname) { hostname = pHostname; this }
+  def Mqs hostname(String pHostname) { hostname = pHostname; this }
 
-  def port(Integer pPort) { port = pPort; this }
+  def Mqs port(Integer pPort) { port = pPort; this }
 
-  def channel(String pChannel) { channel = pChannel; this }
+  def Mqs channel(String pChannel) { channel = pChannel; this }
 
-  def timeout(int ms) { timeout = ms; this }
+  def Mqs timeout(int ms) { timeout = ms; this }
 
   /**
    * Configures using a config object.
