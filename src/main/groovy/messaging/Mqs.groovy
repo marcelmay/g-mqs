@@ -223,7 +223,7 @@ class Mqs {
     message.format = MQConstants.MQFMT_STRING
     message.characterSet = 1208 // UTF-8
     if (correlationId) {
-      message.correlationId = correlationId
+      message.correlationId = correlationId.bytes
     }
     message.writeString(text)
     sentQeue.put(message, new MQPutMessageOptions())
