@@ -3,6 +3,9 @@ package messaging
 import com.ibm.mq.MQQueue
 import com.ibm.mq.MQQueueManager
 
+/**
+ * Note: Requires a test MQS instance!
+ */
 class MqsITest extends GroovyTestCase {
   ConfigObject config
   Mqs mqs
