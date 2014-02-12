@@ -1,0 +1,37 @@
+apply plugin: 'maven'
+
+version = '7.0.1.10'
+group = 'com.ibm.mq'
+
+String prefixIbm = 'com.ibm.'
+int prefixIbmLength = prefixIbm.length()
+
+List files  = []
+new File('.').eachFileMatch groovy.io.FileType.FILES, ~/.*\.jar/, { files << it }
+files = files.collect{
+  def name = it.name.startsWith(prefixIbm)?it.name.substring(prefixIbmLength):it.name
+  name = name.substring(0,name.length()-'.jar'.length()).replaceAll('\\.','_')
+  [file:it,artifactId:name]
+}
+
+artifacts {  
+    files.each {
+        archives it.file
+    }
+}
+
+uploadArchives {
+    repositories {
+        //mavenDeployer {
+        //  repository(url: "file:///tmp/myRepo/")
+        mavenInstaller {
+            files.each { entry ->
+                def aId = entry.artifactId
+                addFilter(aId) {artifact, file ->
+                    artifact.name == entry.file.name.substring(0,entry.file.name.length()-4)
+                }
+                pom(aId).artifactId = aId
+            }
+        }
+    }
+}
