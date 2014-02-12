@@ -5,13 +5,19 @@ import com.ibm.mq.constants.MQConstants
 
 class Mqs {
 
-  class UnknownMqsException extends Exception {
+  abstract class MqsException extends Exception {
+    MqsException(final Throwable cause) {
+      super(cause)
+    }
+  }
+
+  class UnknownMqsException extends MqsException {
     UnknownMqsException(final MQException ex) {
       super(ex)
     }
   }
 
-  class NoMoreMessagesException extends Exception {
+  class NoMoreMessagesException extends MqsException {
     NoMoreMessagesException(final MQException ex) {
       super(ex)
     }
