@@ -2,7 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 version = '1.0-SNAPSHOT'
-group = 'com.bmwgroup.fs.mqs'
+group = 'de.m3y.gmqs'
 
 task sourcesJar(type: Jar, dependsOn:classes) {
     classifier = 'sources'
@@ -19,34 +19,35 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.1.7'
-    testCompile 'org.codehaus.groovy:groovy-test:2.1.7'
+    compile 'org.codehaus.groovy:groovy:2.2.1'
+    testCompile 'org.codehaus.groovy:groovy-test:2.2.1'
 
     compile 'org.glassfish:javax.resource:3.1'
-    // MQS
-    compile 'com.ibm.mq:dhbcore:7.0.1.7'
-    compile 'com.ibm.mq:mq:7.0.1.7'
-    compile 'com.ibm.mq:mq_commonservices:7.0.1.7'
-    compile 'com.ibm.mq:mq_connector:7.0.1.7'
-    compile 'com.ibm.mq:mq_headers:7.0.1.7'
-    compile 'com.ibm.mq:mq_jmqi:7.0.1.7'
-    compile 'com.ibm.mq:mq_jmqi_local:7.0.1.7'
-    compile 'com.ibm.mq:mq_jmqi_remote:7.0.1.7'
-    compile 'com.ibm.mq:mq_jmqi_system:7.0.1.7'
-    compile 'com.ibm.mq:mq_jms_admin:7.0.1.7'
-    compile 'com.ibm.mq:mq_pcf:7.0.1.7'
-    compile 'com.ibm.mq:mqjms:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_commonservices:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_commonservices_j2se:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_jms:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_jms_internal:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_matchspace:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_provider:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_ref:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_wmq:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_wmq_common:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_wmq_factories:7.0.1.7'
-    compile 'com.ibm.mq:msg_client_wmq_v6:7.0.1.7'
+
+    // MQS - see the README.md for spawning to local repo
+    compile 'com.ibm.mq:dhbcore:7.0.1.10'
+    compile 'com.ibm.mq:mq:7.0.1.10'
+    compile 'com.ibm.mq:mq_commonservices:7.0.1.10'
+    compile 'com.ibm.mq:mq_connector:7.0.1.10'
+    compile 'com.ibm.mq:mq_headers:7.0.1.10'
+    compile 'com.ibm.mq:mq_jmqi:7.0.1.10'
+    compile 'com.ibm.mq:mq_jmqi_local:7.0.1.10'
+    compile 'com.ibm.mq:mq_jmqi_remote:7.0.1.10'
+    compile 'com.ibm.mq:mq_jmqi_system:7.0.1.10'
+    compile 'com.ibm.mq:mq_jms_admin:7.0.1.10'
+    compile 'com.ibm.mq:mq_pcf:7.0.1.10'
+    compile 'com.ibm.mq:mqjms:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_commonservices:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_commonservices_j2se:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_jms:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_jms_internal:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_matchspace:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_provider:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_ref:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_wmq:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_wmq_common:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_wmq_factories:7.0.1.10'
+    compile 'com.ibm.mq:msg_client_wmq_v6:7.0.1.10'
 }
 
 test {
