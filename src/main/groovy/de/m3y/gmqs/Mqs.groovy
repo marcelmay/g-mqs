@@ -1,4 +1,4 @@
-package messaging
+package de.m3y.gmqs
 
 import com.ibm.mq.*
 import com.ibm.mq.constants.MQConstants

@@ -1,4 +1,4 @@
-package messaging
+package de.m3y.gmqs
 
 import com.ibm.mq.MQQueue
 import com.ibm.mq.MQQueueManager

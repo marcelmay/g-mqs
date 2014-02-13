@@ -1,4 +1,6 @@
-package messaging
+package de.m3y.gmqs
+
+import de.m3y.gmqs.Mqs
 
 class MqsTest extends GroovyTestCase {
   ConfigObject config
