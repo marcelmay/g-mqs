@@ -1,16 +1,12 @@
-g-mqs
-=====
-
 g-mqs provides a [Groovy](http://groovy.codehaus.org) DSL wrapper around
 [WebSphere MQS](http://www.ibm.com/software/products/en/wmq) client API.
 
-Example
--------
+Groovy example
+--------------
 '''
 new Mqs().hostname('localhost').port(1414).channel('TEST_CHANNEL').withQueueManager('test_qm') {
   String correlationId = 'some.correlation.id'
   withQueue(config.queueSend, Mqs.QueueOptions.SEND) {
-    purgeQueue()
     sendToQueue('My message', correlationId)
   }
   withQueue(config.queueSend, Mqs.QueueOptions.RECEIVE) {
@@ -30,7 +26,7 @@ Building from source
 
 * Dependencies : Maven REPO vs. local
 
-  The required WebSphere MQS JARs are commercially licensed by IBM and are not available by public Maven repos.
+  The required WebSphere MQS JARs are commercially licensed by IBM and are therefore not available by public Maven repos.
 
   **Tip:** There's an evaluation version [available](http://www.ibm.com/software/products/en/wmq)!
 
