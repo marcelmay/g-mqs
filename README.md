@@ -73,7 +73,9 @@ com.ibm.msg.client.wmq.v6.jar
 dhbcore.jar
 ```
 
-  3. Update the *build.gradle* (probably the MQS version, and maybe the local or remote repo)
+  3. Update the *build.gradle*  
+     You probably want to set the correct MQS version for your JARs, and maybe the local or remote repo.  
+     Note that for the MQS version, you will also have to update the MQS dependency version in the top level *build.gradle*.
 
   4. Run Gradle  
      By default this will spawn the JARs to your local repo.  
