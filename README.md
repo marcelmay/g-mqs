@@ -1,3 +1,6 @@
+A WebSphere MQS Groovy wrapper
+------------------------------
+
 g-mqs provides a [Groovy](http://groovy.codehaus.org) DSL wrapper around
 [WebSphere MQS](http://www.ibm.com/software/products/en/wmq) client API.
 
