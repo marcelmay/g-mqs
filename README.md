@@ -6,6 +6,7 @@ g-mqs provides a [Groovy](http://groovy.codehaus.org) DSL wrapper around
 
 Groovy example
 --------------
+[(See full standalone Groovy script including @Grape)](samples/send-receive-example.groovy)
 ```groovy
 new Mqs().hostname('localhost').port(1414).channel('TEST_CHANNEL').withQueueManager('test_qm') {
     String correlationId = 'some.correlation.id'
