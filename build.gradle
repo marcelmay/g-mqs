@@ -19,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.2.1'
-    testCompile 'org.codehaus.groovy:groovy-test:2.2.1'
+    compile 'org.codehaus.groovy:groovy:2.3.3'
+    testCompile 'org.codehaus.groovy:groovy-test:2.3.3'
 
     compile 'org.glassfish:javax.resource:3.1'
 
