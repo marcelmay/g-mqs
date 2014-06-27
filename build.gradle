@@ -1,5 +1,6 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'codenarc'
 
 version = '1.0-SNAPSHOT'
 group = 'de.m3y.gmqs'
@@ -48,10 +49,16 @@ dependencies {
     compile 'com.ibm.mq:msg_client_wmq_common:7.0.1.10'
     compile 'com.ibm.mq:msg_client_wmq_factories:7.0.1.10'
     compile 'com.ibm.mq:msg_client_wmq_v6:7.0.1.10'
+    //codenarc 'org.codenarc:CodeNarc:0.21'
 }
 
 test {
     testLogging {
         exceptionFormat = 'full'
     }
+}
+
+codenarc {
+    configFile = rootProject.file('config/codenarc/codenarc.groovy')
+    reportFormat = System.properties['codeNarcOutput'] ?: 'html'
 }
