@@ -93,8 +93,8 @@ ruleset {
     VectorIsObsolete 
     
     // rulesets/design.xml
-    AbstractClassWithPublicConstructor 
-    AbstractClassWithoutAbstractMethod 
+    //AbstractClassWithPublicConstructor 
+    //AbstractClassWithoutAbstractMethod 
     BooleanMethodReturnsNull 
     BuilderMethodWithSideEffects 
     CloneableWithoutClone 
@@ -277,7 +277,7 @@ ruleset {
     ClassName 
     //ClassNameSameAsFilename 
     ConfusingMethodName 
-    FactoryMethodName 
+    //FactoryMethodName 
     FieldName 
     InterfaceName 
     MethodName 

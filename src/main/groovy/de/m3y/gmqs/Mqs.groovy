@@ -22,8 +22,8 @@ class Mqs {
       super(ex)
     }
 
-    static def boolean matches(MQException ex) {
-      ex.getCompCode() == 2 && ex.getReason() == 2033
+    static boolean matches(MQException ex) {
+      ex.compCode == 2 && ex.reason == 2033
     }
   }
 
@@ -40,29 +40,29 @@ class Mqs {
   class MqGetMessageOptionsBuilder {
     MQGetMessageOptions options = new MQGetMessageOptions()
 
-    def MqGetMessageOptionsBuilder waitInterval(int ms) {
-      if(timeout > 0) {
+    MqGetMessageOptionsBuilder waitInterval(int ms) {
+      if (timeout > 0) {
         options.options += MQConstants.MQGMO_WAIT
         options.waitInterval = ms
       }
       this
     }
 
-    def MqGetMessageOptionsBuilder noWait() {
+    MqGetMessageOptionsBuilder noWait() {
       options.options += MQConstants.MQGMO_NO_WAIT
       this
     }
 
-    def MqGetMessageOptionsBuilder matchCorrelationId() {
+    MqGetMessageOptionsBuilder matchCorrelationId() {
       options.matchOptions = MQConstants.MQMO_MATCH_CORREL_ID
       this
     }
 
-    def MQGetMessageOptions create() {
+    MQGetMessageOptions create() {
       options
     }
 
-    def MqGetMessageOptionsBuilder failIfQuiescing() {
+    MqGetMessageOptionsBuilder failIfQuiescing() {
       options.options += MQConstants.MQGMO_FAIL_IF_QUIESCING
       this
     }
@@ -75,13 +75,13 @@ class Mqs {
   MQQueueManager queueManager
   MQQueue queue
 
-  def Mqs hostname(String pHostname) { hostname = pHostname; this }
+  Mqs hostname(String pHostname) { hostname = pHostname; this }
 
-  def Mqs port(Integer pPort) { port = pPort; this }
+  Mqs port(Integer pPort) { port = pPort; this }
 
-  def Mqs channel(String pChannel) { channel = pChannel; this }
+  Mqs channel(String pChannel) { channel = pChannel; this }
 
-  def Mqs timeout(int ms) { timeout = ms; this }
+  Mqs timeout(int ms) { timeout = ms; this }
 
   /**
    * Configures using a config object.
@@ -97,7 +97,7 @@ class Mqs {
     this
   }
 
-  def Mqs withQueueManager(String queueManagerName, Closure closure) {
+  Mqs withQueueManager(String queueManagerName, Closure closure) {
     prepareQueueManager(queueManagerName)
     try {
       closure.delegate = this
@@ -108,7 +108,7 @@ class Mqs {
     this
   }
 
-  def Mqs closeQueueManager() {
+  Mqs closeQueueManager() {
     if (queueManager != null) {
       queueManager.disconnect()
       queueManager = null
@@ -116,7 +116,7 @@ class Mqs {
     this
   }
 
-  def Mqs prepareQueueManager(String queueManagerName) {
+  Mqs prepareQueueManager(String queueManagerName) {
     MQEnvironment.@hostname = hostname
     MQEnvironment.@port = port
     MQEnvironment.@channel = channel
@@ -124,7 +124,7 @@ class Mqs {
     this
   }
 
-  def Mqs withQueue(String queueName, QueueOptions queueOptions, Closure closure) {
+  Mqs withQueue(String queueName, QueueOptions queueOptions, Closure closure) {
     prepareQueue(queueName, queueOptions)
     try {
       closure.delegate = this
@@ -135,16 +135,16 @@ class Mqs {
     this
   }
 
-  def Mqs prepareQueue(String queueName, QueueOptions queueOptions) {
+  Mqs prepareQueue(String queueName, QueueOptions queueOptions) {
     queue = createQueue(queueName, queueOptions)
     this
   }
 
-  def MQQueue createQueue(String queueName, QueueOptions queueOptions) {
+  MQQueue createQueue(String queueName, QueueOptions queueOptions) {
     queueManager.accessQueue(queueName, queueOptions.value)
   }
 
-  def Mqs closeQueue() {
+  Mqs closeQueue() {
     if (queue != null) {
       queue.close()
       queue = null
@@ -152,18 +152,19 @@ class Mqs {
     this
   }
 
-  def String receiveMessageByCorrelationId(String correlationId) {
-    queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(timeout).matchCorrelationId().create()) { MQMessage message ->
-      message.correlationId = correlationId.bytes
+  String receiveMessageByCorrelationId(String correlationId) {
+    queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(timeout).matchCorrelationId().create()) {
+      MQMessage message ->
+        message.correlationId = correlationId.bytes
     }
   }
 
 
-  def String receiveMessage() {
+  String receiveMessage() {
     queueGetContent(new MqGetMessageOptionsBuilder().waitInterval(timeout).create())
   }
 
-  def int foreachMessageReceived(Closure closure) {
+  int foreachMessageReceived(Closure closure) {
     int count = 0
     queueGet(new MqGetMessageOptionsBuilder().waitInterval(timeout).create(), true) { message ->
       String content = getContent(message)
@@ -180,11 +181,11 @@ class Mqs {
     }
   }
 
-  private def queueGet(MQGetMessageOptions options, boolean loop = false, Closure closure) {
+  private queueGet(MQGetMessageOptions options, boolean loop = false, Closure closure) {
     try {
       while (loop) {
-        MQMessage message = new MQMessage();
-        queue.get(message, options);
+        MQMessage message = new MQMessage()
+        queue.get(message, options)
         closure.delegate = this
         closure.call(message)
       }
@@ -195,11 +196,11 @@ class Mqs {
     }
   }
 
-  private def String queueGetContent(MQGetMessageOptions options) {
-    queueGetContent(options) {}
+  private String queueGetContent(MQGetMessageOptions options) {
+    queueGetContent(options) { }
   }
 
-  private def String queueGetContent(MQGetMessageOptions options, Closure closure) {
+  private String queueGetContent(MQGetMessageOptions options, Closure closure) {
     try {
       MQMessage message = new MQMessage()
       closure.delegate = this
@@ -215,7 +216,7 @@ class Mqs {
     sendToQueue(queue, text)
   }
 
-  def static sendToQueue(MQQueue sentQueue, String text) {
+  static sendToQueue(MQQueue sentQueue, String text) {
     sendToQueue(sentQueue, text, null)
   }
 
@@ -223,7 +224,7 @@ class Mqs {
     sendToQueue(queue, text, correlationId)
   }
 
-  def static sendToQueue(MQQueue sentQeue, String text, String correlationId) {
+  static sendToQueue(MQQueue sentQeue, String text, String correlationId) {
     def message = new MQMessage()
     message.setVersion(MQConstants.MQMD_VERSION_2)
     message.format = MQConstants.MQFMT_STRING
@@ -235,17 +236,18 @@ class Mqs {
     sentQeue.put(message, new MQPutMessageOptions())
   }
 
-  def static String getContent(MQMessage msg) {
-    int strLen = msg.getMessageLength()
+  static String getContent(MQMessage msg) {
+    int strLen = msg.messageLength
     byte[] strData = new byte[strLen]
     msg.readFully(strData)
-    return new String(strData)
+    new String(strData)
   }
 
-  def mapException(MQException ex) {
+  def mapException(MQException ex) throws MqsException {
     if (NoMoreMessagesException.matches(ex)) {
       throw new NoMoreMessagesException(ex)
-    } else throw new UnknownMqsException(ex)
+    }
+    throw new UnknownMqsException(ex)
   }
 }
 
